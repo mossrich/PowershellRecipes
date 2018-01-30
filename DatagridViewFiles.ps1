@@ -26,8 +26,7 @@ $Script:dataGridView.add_CellPainting({ Param($sender,$e)
             $prevCell = $Script:dataGridView[$e.columnIndex,($e.rowIndex - 1)]
             If (($prevCell -ne $null) -and ($thisCell.Value -eq $prevCell.Value)){
                 $e.AdvancedBorderStyle.Top = [System.Windows.Forms.DataGridViewAdvancedCellBorderStyle]::None
-                #doesn't work
-                $Script:dataGridView[$e.columnIndex,$e.rowIndex].Style.ForeColor = $Script:dataGridView[$e.columnIndex,$e.rowIndex].Style.BackColor
+                $Script:dataGridView[$e.columnIndex,$e.rowIndex].Style.ForeColor = [System.Drawing.Color]::Transparent
             }
         }
     }Catch{
