@@ -1,23 +1,45 @@
-Param([string] $BaseFolder = "c:\users\$($env:UserName)\Favorites")
-
+Param([string] $BaseFolder = "c:\users\$($env:UserName)\Favorites\links")
 [reflection.assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
 [reflection.assembly]::LoadWithPartialName("System.Drawing") | Out-Null
-$FilesJSON = (Get-ChildItem $BaseFolder -Recurse | Select @{n='Folder';e={$_.DirectoryName -replace [regex]::Escape($BaseFolder), "."}}, Name, LastWriteTime, Length | Sort Folder, Name | ConvertTo-Json)
-[int]$FormWidth = 900; [int]$FormHeight = 600 #TODO: store these in registry on form-resive event and read here
+$Script:CurrentFolder = $BaseFolder
+$FilesToJSON = {Param ($folder = $Script:CurrentFolder);Get-ChildItem $folder -Recurse | Select @{n='Folder';e={$_.DirectoryName -replace [regex]::Escape($folder), "."}}, Name, LastWriteTime, Length | Sort Folder, Name | ConvertTo-Json}
+$Script:CurrentJSON = & $FilesToJSON #store as JSON for smaller memory footprint
 
-$Script:form = New-Object System.Windows.Forms.Form -Property @{Size = New-Object System.Drawing.Size($FormWidth,$FormHeight)}
+[int]$FormWidth = 1050; [int]$FormHeight = 600 #TODO: store these in registry on form-resive event and read here
+$Script:form = New-Object System.Windows.Forms.Form -Property @{Size = New-Object System.Drawing.Size($FormWidth,$FormHeight);Text = $BaseFolder}
 
-$Script:dataGridView = New-Object System.Windows.Forms.DataGridView -Property @{ #need a handle to this at the script level so we don't have to look it up from the form controls
+$Script:timer = New-Object System.Windows.Forms.Timer -Property @{Interval = 1000} #wait 1000 ms after updating folder name before refresh grid 
+$Script:timer.add_Tick({
+    $Script:timer.Stop();#stop ticking - we only want one event per update
+    $Script:CurrentJSON = & $FilesToJSON -folder $Script:CurrentFolder
+    $Script:dataGridView.DataSource = [System.collections.ArrayList] ($Script:CurrentJSON | ConvertFrom-Json);
+    $Script:dataGridView.Refresh()
+}) 
+
+$txtFolder =  New-Object System.Windows.Forms.TextBox -Property @{Name="txtFolder"; Text=$BaseFolder; Anchor="Top,Left,Right"}
+$txtFolder.add_TextChanged({Param([System.Windows.Forms.TextBox]$sender, $e)
+    $Script:timer.Stop() #stop any pending update - the text box is changed
+    If($sender.Text.TrimEnd('\') -ne $Script:CurrentFolder.TrimEnd('\')){ #adding a \ to the end of a folder name is still the same folder on disk, but resolves differently
+        If(-not (Test-Path $sender.Text)){$sender.ForeColor = "Red";return} #set text red and abort
+        $sender.ForeColor = "Black" #Write-Host "Starting Timer BaseFolder: $BaseFolder Text: $($sender.Text)" 
+        $Script:CurrentFolder = $sender.Text.TrimEnd('\')
+        $Script:timer.Start() #update grid after tick - prevents too many updates for valid folders
+    }
+})
+
+$Script:dataGridView = New-Object System.Windows.Forms.DataGridView -Property @{ #need a handle to this at the script level so we don't have to look it up from form.controls['DG']
     Name = "DG"  
     Anchor = "Left,Right,Top,Bottom"
-    AutoSizeColumnsMode = "AllCells" #[System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
+    AutoSizeColumnsMode = "AllCells" #[System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells - doesn't work
     AutoSizeRowsMode = "None"
-    DataSource = [System.collections.ArrayList] ($FilesJSON | ConvertFrom-Json)
-    Size = New-Object System.Drawing.Size(($FormWidth - 30),($FormHeight - 50)) #TODO: make room for other controls above grid
+    DataSource = [System.collections.ArrayList] ((& $FilesToJSON) | ConvertFrom-Json)
+    Size = New-Object System.Drawing.Size(($FormWidth - 30),($FormHeight - $txtFolder.Size.Height - 50)) 
+    Location = New-Object System.Drawing.Point(0,($txtFolder.Size.Height))
 }
-#add checkbox and set styles
+#add checkbox and set styles for this instance
 $Script:dataGridView.Columns.Add( (New-Object System.Windows.Forms.DataGridViewCheckBoxColumn -Property @{Name = 'Check'}) )
 $Script:dataGridView.RowTemplate.Height = ($Script:dataGridView.RowTemplate.Height - 4) #shrink default height by 4 pixels  #$Script:dataGridView.DefaultCellStyle.Padding = 0  #already default
+$txtFolder.Size = New-Object System.Drawing.Size(($FormWidth / 2),$txtFolder.Size.Height)
 #$Script:dataGridView.AdvancedCellBorderStyle = New-Object System.Windows.Forms.DataGridViewAdvancedBorderStyle -Property @{Bottom = [System.Windows.Forms.DataGridViewAdvancedCellBorderStyle]::NoneTop = $Script:dataGridView.AdvancedCellBorderStyle.Top} #read only property
 
 $Script:dataGridView.add_CellPainting({#Merge rows
@@ -42,5 +64,6 @@ $Script:dataGridView.add_CellValueChanged({ Param([System.Object]$sender,[System
     
 })
 
+$Script:form.Controls.Add($txtFolder)
 $Script:form.Controls.Add($Script:dataGridView)
 $Script:form.ShowDialog()
