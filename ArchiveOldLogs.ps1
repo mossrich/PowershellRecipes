@@ -21,7 +21,7 @@ Try{
     $WriteArchive = [IO.Compression.ZipFile]::Open( $ZipPath, [System.IO.Compression.ZipArchiveMode]::Update)
     ForEach ($File in $FileList){
         Write-Progress -Activity "Archiving old files" -Status  "Archiving file $($totalcount - $countdown) of $totalcount : $($File.Name)"  -PercentComplete (($totalcount - $countdown)/$totalcount * 100)
-        $RelativePath = (Resolve-Path $File.FullName -Relative).TrimStart(".\")
+        $RelativePath = (Resolve-Path -LiteralPath "$($File.FullName)" -Relative).TrimStart(".\")
         $AlreadyArchivedFile = ($WriteArchive.Entries | Where-Object {#zip will store multiple copies of the exact same file - prevent this by checking if already archived. 
                 (($_.FullName -eq $RelativePath) -and ($_.Length -eq $File.Length) )  -and 
                 ([math]::Abs(($_.LastWriteTime.UtcDateTime - $File.LastWriteTimeUtc).Seconds) -le 2) #ZipFileExtensions timestamps are only precise within 2 seconds. 
