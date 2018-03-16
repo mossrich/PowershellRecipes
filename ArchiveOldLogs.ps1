@@ -1,8 +1,10 @@
+#Sends $FileSpecs files to a zip archive if they match $Filter - deleting the original if $DeleteAfterArchiving is true. 
+#Files that have already been archived will be ignored. 
 param (
    [string] $ParentFolder = "$PSScriptRoot", #Files will be stored in the zip with path relative to this folder
    [string[]] $FileSpecs = @("*.log","*.txt","*.svclog","*.log.*"), 
    $Filter = { $_.LastWriteTime -lt (Get-Date).AddDays(-7)}, #a Where-Object function - default = older than 7 days
-   [string] $ZipPath = "$PSScriptRoot\archive-$(get-date -f yyyy-MM).zip", 
+   [string] $ZipPath = "$PSScriptRoot\archive-$(get-date -f yyyy-MM).zip", #create one archive per run-month - it may contain older files 
    [System.IO.Compression.CompressionLevel]$CompressionLevel = [System.IO.Compression.CompressionLevel]::Optimal, 
    [switch] $DeleteAfterArchiving = $true,
    [switch] $Verbose = $true,
@@ -19,10 +21,10 @@ Try{
     $WriteArchive = [IO.Compression.ZipFile]::Open( $ZipPath, [System.IO.Compression.ZipArchiveMode]::Update)
     ForEach ($File in $FileList){
         Write-Progress -Activity "Archiving old files" -Status  "Archiving file $($totalcount - $countdown) of $totalcount : $($File.Name)"  -PercentComplete (($totalcount - $countdown)/$totalcount * 100)
-        $RelativePath = (Resolve-Path $File.FullName -Relative).TrimStart(".\")
-        $AlreadyArchivedFile = ($WriteArchive.Entries | Where-Object {
+        $RelativePath = (Resolve-Path -LiteralPath "$($File.FullName)" -Relative).TrimStart(".\")
+        $AlreadyArchivedFile = ($WriteArchive.Entries | Where-Object {#zip will store multiple copies of the exact same file - prevent this by checking if already archived. 
                 (($_.FullName -eq $RelativePath) -and ($_.Length -eq $File.Length) )  -and 
-                (($_.LastWriteTime.UtcDateTime - $File.LastWriteTimeUtc) -lt (New-TimeSpan -Seconds 2)) #ZipFileExtensions timestamps are only precise within 2 seconds. TODO: does this work for + or - 2 seconds?
+                ([math]::Abs(($_.LastWriteTime.UtcDateTime - $File.LastWriteTimeUtc).Seconds) -le 2) #ZipFileExtensions timestamps are only precise within 2 seconds. 
             })     
         If($AlreadyArchivedFile -eq $null){
             If($Verbose){Write-Host "Archiving $RelativePath $($File.LastWriteTimeUtc -f "yyyyMMdd-HHmmss") $($File.Length)" }
@@ -52,7 +54,7 @@ Try{
 }Catch [Exception]{
     Write-Error $_.Exception
 }Finally{
-    $WriteArchive.Dispose()
+    $WriteArchive.Dispose() #close the zip file so it can be read later 
     Write-Host "Sent $($totalcount - $countdown - $skipped) of $totalcount files to archive: $ZipPath"
 }
 Pop-Location
