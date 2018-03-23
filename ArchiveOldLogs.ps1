@@ -29,12 +29,13 @@ Try{
         If($AlreadyArchivedFile -eq $null){
             If($Verbose){Write-Host "Archiving $RelativePath $($File.LastWriteTimeUtc -f "yyyyMMdd-HHmmss") $($File.Length)" }
             Try{
+                $ArchivedFile = $null
                 $ArchivedFile = [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($WriteArchive, $File.FullName, $RelativePath, $CompressionLevel)
             }Catch{
                 Write-Warning  "$($File.FullName) could not be archived. `n $($_.Exception.Message)"  
                 $skipped = $skipped + 1
             }
-            If($File.LastWriteTime.IsDaylightSavingTime()){#HACK: fix for buggy date - adds an hour inside archive when the zipped file was created during PDT (files created during PST are not affected).  Not sure how to introduce DST attribute to file date in the archive. 
+            If($File.LastWriteTime.IsDaylightSavingTime() -and $ArchivedFile){#HACK: fix for buggy date - adds an hour inside archive when the zipped file was created during PDT (files created during PST are not affected).  Not sure how to introduce DST attribute to file date in the archive. 
                 $entry = $WriteArchive.GetEntry($RelativePath)    
                 $entry.LastWriteTime = ($File.LastWriteTime.ToLocalTime() - (New-TimeSpan -Hours 1)) #TODO: This is better, but maybe not fully correct. Does it work in all time zones?
             }
