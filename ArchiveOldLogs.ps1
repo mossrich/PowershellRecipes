@@ -21,6 +21,7 @@ Try{
     $WriteArchive = [IO.Compression.ZipFile]::Open( $ZipPath, [System.IO.Compression.ZipArchiveMode]::Update)
     ForEach ($File in $FileList){
         Write-Progress -Activity "Archiving old files" -Status  "Archiving file $($totalcount - $countdown) of $totalcount : $($File.Name)"  -PercentComplete (($totalcount - $countdown)/$totalcount * 100)
+        $ArchivedFile = $null
         $RelativePath = (Resolve-Path -LiteralPath "$($File.FullName)" -Relative).TrimStart(".\")
         $AlreadyArchivedFile = ($WriteArchive.Entries | Where-Object {#zip will store multiple copies of the exact same file - prevent this by checking if already archived. 
                 (($_.FullName -eq $RelativePath) -and ($_.Length -eq $File.Length) )  -and 
@@ -29,7 +30,6 @@ Try{
         If($AlreadyArchivedFile -eq $null){
             If($Verbose){Write-Host "Archiving $RelativePath $($File.LastWriteTimeUtc -f "yyyyMMdd-HHmmss") $($File.Length)" }
             Try{
-                $ArchivedFile = $null
                 $ArchivedFile = [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($WriteArchive, $File.FullName, $RelativePath, $CompressionLevel)
             }Catch{
                 Write-Warning  "$($File.FullName) could not be archived. `n $($_.Exception.Message)"  
