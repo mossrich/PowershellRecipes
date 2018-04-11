@@ -119,4 +119,5 @@ GetProcessInfo $script:DG1
 #$script:DG1.DataSource =  GetProcessInfoArrayList 
 #$script:DG1.Refresh() | Out-Null #grid is empty!
 
-$frm.ShowDialog() | Out-Null
+#$frm.ShowDialog() | Out-Null  #https://stackoverflow.com/questions/30808084/using-windows-forms-locks-up-powershell-ise-minutes-after-script-has-terminated
+[system.windows.forms.application]::run($frm)
