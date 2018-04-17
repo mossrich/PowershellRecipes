@@ -10,8 +10,7 @@ param (
    [switch] $Verbose = $true,
    [switch] $Recurse = $true
 )
-Add-Type -AssemblyName System.IO.Compression
-Add-Type -AssemblyName System.IO.Compression.FileSystem
+@( 'System.IO.Compression','System.IO.Compression.FileSystem') | % { [void][System.Reflection.Assembly]::LoadWithPartialName($_) }
 Push-Location $ParentFolder #change to the folder so we can get relative path
 $FileList = (Get-ChildItem $FileSpecs -Recurse:$Recurse | Where-Object $Filter)
 $totalcount = $FileList.Count
@@ -20,7 +19,7 @@ $skipped = 0
 Try{
     $WriteArchive = [IO.Compression.ZipFile]::Open( $ZipPath, [System.IO.Compression.ZipArchiveMode]::Update)
     ForEach ($File in $FileList){
-        Write-Progress -Activity "Archiving old files" -Status  "Archiving file $($totalcount - $countdown) of $totalcount : $($File.Name)"  -PercentComplete (($totalcount - $countdown)/$totalcount * 100)
+        Write-Progress -Activity "Archiving files" -Status  "Archiving file $($totalcount - $countdown) of $totalcount : $($File.Name)"  -PercentComplete (($totalcount - $countdown)/$totalcount * 100)
         $ArchivedFile = $null
         $RelativePath = (Resolve-Path -LiteralPath "$($File.FullName)" -Relative).TrimStart(".\")
         $AlreadyArchivedFile = ($WriteArchive.Entries | Where-Object {#zip will store multiple copies of the exact same file - prevent this by checking if already archived. 
