@@ -4,7 +4,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 }
 $baseKey = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('ClassesRoot', ".")
 #set these file types to be previewable as text, if not already set
-@(".ps1",".log",".hta",".json",".md",".bat",".cmd",".csv",".reg",".resx",".sql",".svc",".svclog",".vbs",".vcproj") | % {
+@(".ps1",".log",".hta",".json",".md",".bat",".cmd",".csv",".config",".proj",".reg",".resx",".sln",".sql",".svc",".svclog",".targets",".vbs",".vcproj") | % {
     Write-Host "Enabling preview for $_ "
     If(!($baseKey.GetSubKeyNames() -contains $_)){$baseKey.CreateSubKey($_)}
     $regKey = $baseKey.OpenSubKey($_,$true)
@@ -20,8 +20,14 @@ $baseKey = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('ClassesRoot', ".")
     }
     $regKey.Close()
 }
-$regKey = $baseKey.OpenSubKey(".nupkg",$true)
-If($regKey.GetValue('') -eq $null){$regKey.Setvalue('', 'CompressedFolder', 'String')}
-$regKey.Close()
+Try{#allow treating .nupkg files as .zip files and navigating into them
+    $regKey = $baseKey.OpenSubKey(".nupkg",$true)
+    If($regKey.GetValue('') -eq $null){
+        $regKey.Setvalue('', 'CompressedFolder', 'String')
+    }
+    $regKey.Close()
+}Catch{
+    cmd /c "assoc .nupkg=CompressedFolder" 
+}
 
-If($Host.Name -ne "Windows PowerShell ISE Host") {Pause}
+If($Host.Name -ne "Windows PowerShell ISE Host") {Pause} #pause if not in ISE so the user can see errors if running from rt-click 
