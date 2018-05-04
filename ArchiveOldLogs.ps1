@@ -12,7 +12,7 @@ param (
 )
 @( 'System.IO.Compression','System.IO.Compression.FileSystem') | % { [void][System.Reflection.Assembly]::LoadWithPartialName($_) }
 Push-Location $ParentFolder #change to the folder so we can get relative path
-$FileList = (Get-ChildItem $FileSpecs -Recurse:$Recurse | Where-Object $Filter)
+$FileList = (Get-ChildItem $FileSpecs -Recurse:$Recurse  | Where-Object {!$_.PsIsContainer -and $Filter}) #CreateEntryFromFile raises UnauthorizedAccessException if item is a directory
 $totalcount = $FileList.Count
 $countdown = $totalcount
 $skipped = 0
