@@ -15,7 +15,7 @@ Push-Location $ParentFolder #change to the folder so we can get relative path
 $FileList = (Get-ChildItem $FileSpecs -Recurse:$Recurse  | Where-Object {!$_.PsIsContainer -and $Filter}) #CreateEntryFromFile raises UnauthorizedAccessException if item is a directory
 $totalcount = $FileList.Count
 $countdown = $totalcount
-$skipped = 0
+$skipped = @()
 Try{
     $WriteArchive = [IO.Compression.ZipFile]::Open( $ZipPath, [System.IO.Compression.ZipArchiveMode]::Update)
     ForEach ($File in $FileList){
@@ -32,7 +32,7 @@ Try{
                 $ArchivedFile = [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($WriteArchive, $File.FullName, $RelativePath, $CompressionLevel)
             }Catch{
                 Write-Warning  "$($File.FullName) could not be archived. `n $($_.Exception.Message)"  
-                $skipped = $skipped + 1
+                $skipped += [psobject]@{Path=$file.FullName; Reason=$_.Exception.Message}
             }
             If($File.LastWriteTime.IsDaylightSavingTime() -and $ArchivedFile){#HACK: fix for buggy date - adds an hour inside archive when the zipped file was created during PDT (files created during PST are not affected).  Not sure how to introduce DST attribute to file date in the archive. 
                 $entry = $WriteArchive.GetEntry($RelativePath)    
@@ -40,7 +40,7 @@ Try{
             }
         }Else{#Write-Warning "$($File.FullName) is already archived$(If($DeleteAfterArchiving){' and will be deleted.'}Else{'. No action taken.'})" 
             Write-Warning "$($File.FullName) is already archived - No action taken." 
-            $skipped = $skipped + 1
+            $skipped += [psobject]@{Path=$file.FullName; Reason="Already archived"}
         }
         If((($ArchivedFile -ne $null) -and ($ArchivedFile.FullName -eq $RelativePath)) -and $DeleteAfterArchiving) { #delete original if it's been successfully archived. 
             Try {
@@ -55,6 +55,7 @@ Try{
     Write-Error $_.Exception
 }Finally{
     $WriteArchive.Dispose() #close the zip file so it can be read later 
-    Write-Host "Sent $($totalcount - $countdown - $skipped) of $totalcount files to archive: $ZipPath"
+    Write-Host "Sent $($totalcount - $countdown - $($skipped.Count)) of $totalcount files to archive: $ZipPath"
+    $skipped | Format-Table -Autosize -Wrap
 }
 Pop-Location
