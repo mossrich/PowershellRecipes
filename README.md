@@ -31,3 +31,4 @@ README.md	Create - this file
 
 ShellContextMenuVerb.ps1	- Use Windows Shell object to pop up a properties window for a specified file
 
+TraySnippets	- Creates an icon in the system tray with scriptblocks available from rt-click menu 
