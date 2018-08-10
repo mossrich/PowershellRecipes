@@ -2,4 +2,5 @@
 Param(
     [System.Collections.Specialized.StringCollection] $files = (Get-ChildItem .\*.txt)
 )
+add-type -an System.Windows.Forms
 [System.Windows.Forms.Clipboard]::SetFileDropList($files)
