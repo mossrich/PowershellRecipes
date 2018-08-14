@@ -31,4 +31,7 @@ README.md	Create - this file
 
 ShellContextMenuVerb.ps1	- Use Windows Shell object to pop up a properties window for a specified file
 
+SpeechSoundboard.ps1  - a simple list of words as buttons that are spoken when clicked 
+
 TraySnippets	- Creates an icon in the system tray with scriptblocks available from rt-click menu 
+
