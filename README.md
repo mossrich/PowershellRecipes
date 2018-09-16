@@ -23,6 +23,8 @@ GDataClient.ps1	- Performs Oauth 2.0 authorization and authentication/re-auth to
 
 GroupableGrid.ps1	- WPF Grid that allows grouping by a heading 
 
+ID3v1-Edit.ps1 - Parse and set ID3v1 tags in the last 128 bytes of a file
+
 ListWP.ps1	- List Worker Processes
 
 Microsoft.PowerShell_profile.ps1	- settings for the Powershell console at startup 
