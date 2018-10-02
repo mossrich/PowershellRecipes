@@ -35,5 +35,5 @@ ShellContextMenuVerb.ps1	- Use Windows Shell object to pop up a properties windo
 
 SpeechSoundboard.ps1  - a simple list of words as buttons that are spoken when clicked 
 
-TraySnippets	- Creates an icon from baase64-zipped string to put in system tray, with scriptblocks available from rt-click menu 
+TraySnippets	- Creates an icon from base64-zipped string to put in system tray, with scriptblocks available from rt-click menu 
 
