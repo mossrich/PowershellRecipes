@@ -3,6 +3,8 @@ A set of powershell scripts that are useful or show a reusable technique
 
 ArchiveOldLogs.ps1  - cleans up log folders by moving logs matching a date filter into a monthly archive
 
+AsciiMenu.ps1 - shows an ASCII box menu and allows selecting single or multiple choices
+
 CertificateFunctions.ps1  - GetCertThumbprintFromStore gets matching certs and prompts if many match
 
 Choose.ps1	- choose from a list 
