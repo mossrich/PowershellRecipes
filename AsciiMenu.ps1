@@ -4,6 +4,7 @@
 │second option   │
 │third           │
 └────────────────┘
+Note that ReadKey (required for up/down arrows) doesn't work in ISE. There is no graceful downgrade for this script. 
 #>
 function Show-SimpleMenu ([array]$Options, [string]$Title ='Choose an option',$border = '┌─┐│└┘',$highlighted = 0){
     $maxLength = ($Options | Measure-Object -Maximum -Property Length).Maximum #get longest string length
@@ -11,15 +12,14 @@ function Show-SimpleMenu ([array]$Options, [string]$Title ='Choose an option',$b
     $MenuTop = [Console]::CursorTop
     Do{
         [Console]::CursorTop = $MenuTop
-        #Left-align title: Write-Host "$($border[0])$($Title.PadRight($maxLength,$border[1]))$($border[2])" #top border: ┌Title─┐
-        $LeftPad = [string]$border[1] * [Math]::Max(0,[math]::Floor(($maxlength-$Title.Length)/2)) 
-        Write-Host "$($border[0])$(($LeftPad + $Title).PadRight($maxLength,$border[1]))$($border[2])"
+        $LeftPad = [string]$border[1] * [Math]::Max(0,[math]::Floor(($maxlength-$Title.Length)/2)) #gets the left padding required to center the title
+        Write-Host "$($border[0])$(($LeftPad + $Title).PadRight($maxLength,$border[1]))$($border[2])" # #top border: ┌Title─┐   left-aligned: Write-Host "$($border[0])$($Title.PadRight($maxLength,$border[1]))$($border[2])" 
         for ($i = 0; $i -lt $Options.Length;$i++) {
             Write-Host $border[3] -NoNewLine
             if ($i -eq $highlighted) {
                 Write-Host ([string]$Options[$i]).PadRight($maxLength,' ') -fore ([Console]::BackgroundColor) -back ([Console]::ForegroundColor) -NoNewline
             } else {
-                Write-Host ([string]$Options[$i]).PadRight($maxLength,' ') -fore ([Console]::ForegroundColor) -back ([Console]::BackgroundColor) -NoNewline
+                Write-Host ([string]$Options[$i]).PadRight($maxLength,' ') -NoNewline 
             }
             Write-Host $border[3] 
         }
@@ -47,6 +47,7 @@ function Show-MultiSelectMenu ([array]$Options, [string]$Title ='Select with spa
             $highlighted = 0, $selected = (New-Object bool[] $Options.Length ) ){
     $maxLength = ($Options | Measure-Object -Maximum -Property Length).Maximum + 1 #get longest string length, +padding for √ 
     If($maxLength -lt $Title.Length + 2){$maxLength = $Title.Length + 1}
+    If($selected.Length -lt $Options.Length){$selected += (New-Object bool[] ($Options.Length - $selected.Length)) }
     $MenuTop = [Console]::CursorTop
     Do{
         [Console]::CursorTop = $MenuTop
@@ -57,7 +58,7 @@ function Show-MultiSelectMenu ([array]$Options, [string]$Title ='Select with spa
             if ($i -eq $highlighted) {
                 Write-Host ([string]$Options[$i]).PadRight($maxLength,' ') -fore ([Console]::BackgroundColor) -back ([Console]::ForegroundColor) -NoNewline
             } else {
-                Write-Host ([string]$Options[$i]).PadRight($maxLength,' ') -fore ([Console]::ForegroundColor) -back ([Console]::BackgroundColor) -NoNewline
+                Write-Host ([string]$Options[$i]).PadRight($maxLength,' ') -NoNewline
             }
             Write-Host $border[3]
         }
@@ -75,6 +76,8 @@ function Show-MultiSelectMenu ([array]$Options, [string]$Title ='Select with spa
         $Options | %{$i=0}{ If($selected[$i++]){$_} } #TIL: foreach can have a 'begin' scriptbock that's executed only once
     }
 }
+$lowASCIIBorder = '+-+|++' #are there any consoles or fonts where ASCII borders won't show?
 $doubleBorder = '╔═╗║╚╝'
-Show-SimpleMenu @('first','second longer option','third') -border $doubleBorder
+Show-SimpleMenu @('first','second longer option','third') -border $lowASCIIBorder
 Show-MultiSelectMenu @('first','second','third')  -selected @($true,$false,$true) #if $selected is shorter than $options, throws error selecting the last
+Show-MultiSelectMenu (Get-ChildItem -Path . -Directory | Select-Object -ExpandProperty FullName)  -selected @($true,$false,$true) 
