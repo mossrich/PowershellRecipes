@@ -54,7 +54,7 @@ function Show-MultiSelectMenu ([array]$Options, [string]$Title ='Select with spa
         $LeftPad = [string]$border[1] * [Math]::Max(1,[math]::Floor(($maxlength-$Title.Length)/2)) #Centered, at least one border ─
         Write-Host "$($border[0])$(($LeftPad + $Title).PadRight($maxLength + 1,$border[1]))$($border[2])" #top border: ┌─Title─┐
         for ($i = 0; $i -lt $Options.Length;$i++) {#draw the menu
-            If($selected[$i]){ Write-Host "$($border[3])√" -NoNewLine }else{ Write-Host "$($border[3]) " -NoNewLine }
+            Write-Host "$($border[3])$(If($selected[$i]){"√"}else{" "})" -NoNewLine
             if ($i -eq $highlighted) {
                 Write-Host ([string]$Options[$i]).PadRight($maxLength,' ') -fore ([Console]::BackgroundColor) -back ([Console]::ForegroundColor) -NoNewline
             } else {
