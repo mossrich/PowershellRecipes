@@ -13,9 +13,9 @@ CopyFileListToClipboard.ps1	- like ctrl-C in Explorer, copies files and metadata
 
 CountDownTimer.ps1	- shows a countdown timer 3..2..1 before something happens
 
-DatagridViewFiles.ps1	- shows a datagridview in a Windows form
-
 DecodeJwtAccessToken.ps1	- decodes Base 64 JWT AccessToken for OAuth
+
+DynamicParameters.ps1 - a minimal example that allows choosing a folder name at the command line 
 
 EnablePreview.ps1	- allows the preview window in Windows Explorer to show specified file types as text
 
@@ -29,6 +29,8 @@ ID3v1-Edit.ps1 - Parse and set ID3v1 tags in the last 128 bytes of a file
 
 ListWP.ps1	- List Worker Processes
 
+MergedRowsGrid.ps1 - Merge Rows in a WinForms DataGridView if values equal 
+
 Microsoft.PowerShell_profile.ps1	- settings for the Powershell console at startup 
 
 README.md	Create - this file
@@ -38,4 +40,3 @@ ShellContextMenuVerb.ps1	- Use Windows Shell object to pop up a properties windo
 SpeechSoundboard.ps1  - a simple list of words as buttons that are spoken when clicked 
 
 TraySnippets	- Creates an icon from base64-zipped string to put in system tray, with scriptblocks available from rt-click menu 
-
