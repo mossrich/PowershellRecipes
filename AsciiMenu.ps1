@@ -6,9 +6,8 @@
 └────────────────┘
 Note that ReadKey (required for up/down arrows) doesn't work in ISE. There is no graceful downgrade for this script. 
 #>
-function Show-SimpleMenu ([array]$Options, [string]$Title ='Choose an option',$border = '┌─┐│└┘',$highlighted = 0){
-    $maxLength = ($Options | Measure-Object -Maximum -Property Length).Maximum #get longest string length
-    If($maxLength -lt $Title.Length){$maxLength = $Title.Length}
+function Show-SimpleMenu ([array]$Options, [string]$Title ='Choose an option',$border = '┌─┐│└┘',[int]$highlighted = 0){
+    $maxLength = [Math]::Max(($Options | Measure -Max -Prop Length).Maximum, $Title.Length) #get longest option or title
     $MenuTop = [Console]::CursorTop
     Do{
         [Console]::CursorTop = $MenuTop
@@ -24,22 +23,24 @@ function Show-SimpleMenu ([array]$Options, [string]$Title ='Choose an option',$b
             Write-Host $border[3] 
         }
         Write-Host "$($border[4])$([string]$border[1] * $maxLength)$($border[5])" #bottom border:└─┘
-        $key = [Console]::ReadKey($true).Key
-        If ($key -eq [ConsoleKey]::UpArrow -and $highlighted -gt 0 ) {$highlighted--}
-        If ($key -eq [ConsoleKey]::DownArrow -and $highlighted -lt $Options.Length - 1) {$highlighted++}
-        If ((1..9).Contains($key.value__ - [ConsoleKey]::NumPad0.value__) -and #change highlight with 1..9 
-            ($Options.Length + [ConsoleKey]::NumPad1.value__ -gt $key.value__)) { 
-                $highlighted = $key.value__ - [ConsoleKey]::NumPad1.value__ 
+        $key = [Console]::ReadKey($true)
+        If ($key.Key -eq [ConsoleKey]::UpArrow -and $highlighted -gt 0 ) {$highlighted--}
+        ElseIf ($key.Key -eq [ConsoleKey]::DownArrow -and $highlighted -lt $Options.Length - 1) {$highlighted++}
+        ElseIf ( (1..9 -join '').contains($key.KeyChar) -and $Options.Length -ge [int]::Parse($key.KeyChar)) { $highlighted = [int]::Parse($key.KeyChar) - 1 }#change highlight with 1..9 
+        Else { 
+            (([math]::min($highlighted + 1, $Options.Length) .. $Options.Length) + (0 .. ($highlighted - 1))) | %{ #cycle from highlighted + 1 to end, and restart
+                If($Options[$_] -and $Options[$_].StartsWith($key.KeyChar) ){$highlighted = $_; Continue} #if letter matches first letter, highlight 
+            }
         }
-    }While($key -ne [ConsoleKey]::Enter -and $key -ne [ConsoleKey]::Escape )
-    If($key -eq [ConsoleKey]::Enter){ $Options[$highlighted] }
+    }While( -not ([ConsoleKey]::Enter,[ConsoleKey]::Escape).Contains($key.Key) )
+    If($Key.Key -eq [ConsoleKey]::Enter){ $Options[$highlighted] }
 }
 
 <#
-Shows an ascii menu: highlight with up/down arrows, select with space bar and choose with [Enter]. 
+Shows an ascii menu: highlight with up/down arrows or 1..9, or first letter of option. Select with space bar and choose with [Enter]. 
 ┌─Select with spacebar─┐
 │√first                │
-│ second option        │
+│ second               │
 │√third                │
 └──────────────────────┘
 #>
@@ -63,21 +64,23 @@ function Show-MultiSelectMenu ([array]$Options, [string]$Title ='Select with spa
             Write-Host $border[3]
         }
         Write-Host "$($border[4])$($border[1])$([string]$border[1] * ($maxLength))$($border[5])"
-        $key = [Console]::ReadKey($true).Key 
-        If ($key -eq [ConsoleKey]::Spacebar) {$selected[$highlighted] = !$selected[$highlighted] }
-        If ($key -eq [ConsoleKey]::UpArrow -and $highlighted -gt 0 ) {$highlighted--}
-        If ($key -eq [ConsoleKey]::DownArrow -and $highlighted -lt $Options.Length - 1) {$highlighted++}
-        If ((1..9).Contains($key.value__ - [ConsoleKey]::NumPad0.value__) -and 
-            ($Options.Length + [ConsoleKey]::NumPad1.value__ -gt $key.value__)) { 
-                $highlighted = $key.value__ - [ConsoleKey]::NumPad1.value__ #change highlight with 1..9 
+        $key = [Console]::ReadKey($true)
+        If ($key.Key -eq [ConsoleKey]::Spacebar) {$selected[$highlighted] = !$selected[$highlighted] }
+        ElseIf ($key.Key -eq [ConsoleKey]::UpArrow -and $highlighted -gt 0 ) {$highlighted--}
+        ElseIf ($key.Key -eq [ConsoleKey]::DownArrow -and $highlighted -lt $Options.Length - 1) {$highlighted++}
+        ElseIf ( (1..9 -join '').contains($key.KeyChar) -and $Options.Length -ge [int]::Parse($key.KeyChar)) { $highlighted = [int]::Parse($key.KeyChar) - 1 }#change highlight with 1..9 
+        Else { 
+            (([math]::min($highlighted + 1, $Options.Length) .. $Options.Length) + (0 .. ($highlighted - 1))) | %{ #cycle from highlighted + 1 to end, and restart
+                If($Options[$_] -and $Options[$_].StartsWith($key.KeyChar) ){$highlighted = $_; Continue} #if letter matches first letter, highlight 
+            }
         }
-    }While(! @([ConsoleKey]::Enter, [ConsoleKey]::Escape ).Contains($key)) #stop if Enter or Esc
-    If($key -eq [ConsoleKey]::Enter){ #return the menu options that are selected
+    }While(! @([ConsoleKey]::Enter, [ConsoleKey]::Escape ).Contains($key.Key)) #stop if Enter or Esc
+    If($key.Key-eq [ConsoleKey]::Enter){ #return the menu options that are selected
         $Options | %{$i=0}{ If($selected[$i++]){$_} } #TIL: foreach can have a 'begin' scriptbock that's executed only once
     }
 }
-$lowASCIIBorder = '+-+|++' #are there any consoles or fonts where ASCII borders won't show?
+$lowASCIIBorder = '+-+|++' #are there any consoles or fonts where ASCII box borders won't show?
 $doubleBorder = '╔═╗║╚╝'
-Show-SimpleMenu @('first','second longer option','third') -border $lowASCIIBorder
-Show-MultiSelectMenu @('first','second','third')  -selected @($true,$false,$true) #if $selected is shorter than $options, throws error selecting the last
+Show-SimpleMenu @('first','second option','third','fourth','fifth') -border $doubleBorder
+Show-MultiSelectMenu @('first','second','third','fourth','fifth')  -selected @($true,$false,$true) 
 Show-MultiSelectMenu (Get-ChildItem -Path . -Directory | Select-Object -ExpandProperty FullName)  -selected @($true,$false,$true) 
