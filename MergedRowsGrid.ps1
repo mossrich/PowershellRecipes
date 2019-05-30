@@ -62,4 +62,5 @@ $Script:dataGridView = New-Object System.Windows.Forms.DataGridView -Property @{
 FillDatagrid
 $Script:dataGridView.RowTemplate.Height = ($Script:dataGridView.RowTemplate.Height - 4) #shrink default height by 4 pixels  #$Script:dataGridView.DefaultCellStyle.Padding = 0  #already default
 [void] $Script:form.Controls.AddRange(@($txtFolder,$Script:dataGridView))
-[void] $Script:form.ShowDialog()
+#[void] $Script:form.ShowDialog() #https://stackoverflow.com/questions/30808084/using-windows-forms-locks-up-powershell-ise-minutes-after-script-has-terminated
+[system.windows.forms.application]::run($Script:form)
