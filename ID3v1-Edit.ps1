@@ -106,6 +106,7 @@ $FrameMap = @{#subset of id3.org
    'TPE1' = [psobject]@{Description = 'Lead performer(s)/Soloist(s)'; Parser={}}
    'TPE2' = [psobject]@{Description = 'Band/orchestra/accompaniment'; Parser={}}
    'TPE3' = [psobject]@{Description = 'Conductor'; Parser={}}
+   'TPOS' = [psobject]@{Description = 'Part of a set'; Parser={}}
    'TPUB' = [psobject]@{Description = 'Publisher'; Parser={}}
    'TRCK' = [psobject]@{Description = 'Track'; Parser={}}
    'TYER' = [psobject]@{Description = 'Year'; Parser={}}
@@ -137,6 +138,7 @@ Function Get-ID3v2([parameter(ValueFromPipeline)] [string]$path){
                 $strm.Read($isUnicode,0,1) | Out-Null
                 $FrameBuf = New-Object byte[] ($FrameSize - 1)
                 $strm.Read($FrameBuf,0,$FrameBuf.Length) | Out-Null
+                If($encoders[0].GetString($FrameBuf[0..1]) -eq 'ÿþ'){$isUnicode = 1} #TODO: why does unicode start with ÿþ?
                 $ID3v2[$FrameMap[$FrameType].Description] = $encoders[$isUnicode].GetString($FrameBuf)
                 Write-Verbose "Read - Frame: $FrameType Size: $FrameSize Encoding: $($encoder)  Stream Position: $($strm.Position)($('{0:X}' -f  ($strm.Position))) of $TagSize ($('{0:X}' -f  $TagSize))"
             } 
