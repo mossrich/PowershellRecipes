@@ -7,7 +7,7 @@
 Note that ReadKey (required for up/down arrows) doesn't work in ISE. There is no graceful downgrade for this script. 
 #>
 function Show-SimpleMenu ([array]$Options, [string]$Title ='Choose an option',$border = '┌─┐│└┘',[int]$highlighted = 0){
-    $maxLength = [Math]::Max(($Options | Measure -Max -Prop Length).Maximum, $Title.Length) #get longest option or title
+    $maxLength = ($Options + (,$Title) | Measure -Max -Prop Length).Maximum #number of chars between | and | 
     $MenuTop = [Console]::CursorTop
     Do{
         [Console]::CursorTop = $MenuTop
@@ -18,9 +18,9 @@ function Show-SimpleMenu ([array]$Options, [string]$Title ='Choose an option',$b
             if ($i -eq $highlighted) {
                 Write-Host ([string]$Options[$i]).PadRight($maxLength,' ') -fore ([Console]::BackgroundColor) -back ([Console]::ForegroundColor) -NoNewline
             } else {
-                Write-Host ([string]$Options[$i]).PadRight($maxLength,' ') -NoNewline 
+                Write-Host ([string]$Options[$i]).PadRight($maxLength,' ') -NoNewline
             }
-            Write-Host $border[3] 
+            Write-Host $border[3]
         }
         Write-Host "$($border[4])$([string]$border[1] * $maxLength)$($border[5])" #bottom border:└─┘
         $key = [Console]::ReadKey($true)
@@ -46,9 +46,8 @@ Shows an ascii menu: highlight with up/down arrows or 1..9, or first letter of o
 #>
 function Show-MultiSelectMenu ([array]$Options, [string]$Title ='Select with spacebar', $border = '┌─┐│└┘',
             $highlighted = 0, $selected = (New-Object bool[] $Options.Length ) ){
-    $maxLength = ($Options | Measure-Object -Maximum -Property Length).Maximum + 1 #get longest string length, +padding for √ 
-    If($maxLength -lt $Title.Length + 2){$maxLength = $Title.Length + 1}
-    If($selected.Length -lt $Options.Length){$selected += (New-Object bool[] ($Options.Length - $selected.Length)) }
+    $maxLength = ($Options + (,$Title) | Measure -Max -Prop Length).Maximum + 1 #get longest string length, +padding for √ 
+    If($Selected.Length -lt $Options.Length){$Selected += (New-Object bool[] ($Options.Length - $Selected.Length)) } #pad $Selected to $Options.length
     $MenuTop = [Console]::CursorTop
     Do{
         [Console]::CursorTop = $MenuTop
@@ -65,7 +64,7 @@ function Show-MultiSelectMenu ([array]$Options, [string]$Title ='Select with spa
         }
         Write-Host "$($border[4])$($border[1])$([string]$border[1] * ($maxLength))$($border[5])"
         $key = [Console]::ReadKey($true)
-        If ($key.Key -eq [ConsoleKey]::Spacebar) {$selected[$highlighted] = !$selected[$highlighted] }
+        If ($key.Key -eq [ConsoleKey]::Spacebar) {$Selected[$Highlighted] = !$Selected[$Highlighted]; If($Highlighted -lt $Options.Length - 1){$Highlighted++} }
         ElseIf ($key.Key -eq [ConsoleKey]::UpArrow -and $highlighted -gt 0 ) {$highlighted--}
         ElseIf ($key.Key -eq [ConsoleKey]::DownArrow -and $highlighted -lt $Options.Length - 1) {$highlighted++}
         ElseIf ( (1..9 -join '').contains($key.KeyChar) -and $Options.Length -ge [int]::Parse($key.KeyChar)) { $highlighted = [int]::Parse($key.KeyChar) - 1 }#change highlight with 1..9 
