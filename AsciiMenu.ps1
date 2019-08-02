@@ -46,7 +46,7 @@ function Show-BoxMenu (
             Write-Host "$(If($ScrollThumbIndex -eq $i){$Border[9]}Else{$Border[3]})$EOL" -NoNewline
         }
         $Status = If($MultiSelect){'{0}/{1}' -f ($Selected | ?{$_ -eq $true}).Count, $Options.Length}Else{''}  #Debug -  'Th:' + $ScrollThumbIndex + ' F:' + $FirstShowingOption + ' L:' + $Options.Length  + ' M:' + $MaxOptionsToShow
-        Write-Host "$($Border[4])$($Status.PadLeft($Width,$Border[1]))$($Border[5])" -NoNewline # bottom of frame    └───────2/20┘  
+        Write-Host "$($Border[4])$($Status.PadLeft($Width,$Border[1]))$($Border[5])$EOL" -NoNewline # bottom of frame    └───────2/20┘  
         $key = [Console]::ReadKey($true)
         If ($key.Key -eq [ConsoleKey]::Spacebar) {$Selected[$Highlighted] = !$Selected[$Highlighted]; If($Highlighted -lt $Options.Length - 1){$Highlighted++} }
         ElseIf ($key.Key -eq [ConsoleKey]::UpArrow  ) {$Highlighted = [math]::Max($Highlighted - 1, 0);}
