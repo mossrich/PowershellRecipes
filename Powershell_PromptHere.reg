@@ -1,0 +1,18 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\shell\powershell.exe]
+"MUIVerb"=""
+"SubCommands"="powershell;powershell_admin"
+"Icon"="PowerShell.exe"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\shell\powershell]
+@="Open PowerShell here"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\shell\powershell\command]
+@="powershell.exe -NoLogo -NoExit -Command Set-Location '%V'"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\shell\powershell_admin]
+@="Open PowerShell (admin) here"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\shell\powershell_admin\command]
+@="powershell.exe -command \"start-process powershell.exe -ArgumentList \\\"-NoLogo -NoExit -Command Set-Location '%v'\\\"  -verb RunAs\""
