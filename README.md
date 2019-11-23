@@ -1,5 +1,5 @@
 # PowershellRecipes
-A set of powershell scripts that are useful or show a reusable technique 
+A set of powershell scripts that are useful or show a reusable technique. There are no dependencies between scripts - each one is standalone and acts upon existing data (ie: MP3/Zip files, cert store, etc.) or configuration created by the script.
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/ArchiveOldLogs.ps1">ArchiveOldLogs.ps1</a> - cleans up log folders by moving logs matching a date filter into a monthly archive
 
