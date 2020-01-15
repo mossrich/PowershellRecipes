@@ -35,6 +35,8 @@ A set of powershell scripts that are useful or show a reusable technique. There 
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/README.md">README.md</a>	Create - this file
 
+<a href="https://github.com/mossrich/PowershellRecipes/blob/master/Rot13.ps1">Rot13.ps1</a>	Rot13 'encryption' with inline Switch -Regex 
+
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/ShellContextMenuVerb.ps1">ShellContextMenuVerb.ps1</a>	- Use Windows Shell object to pop up a properties window for a specified file
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/SpeechSoundboard.ps1">SpeechSoundboard.ps1</a>  - a simple list of words as buttons that are spoken when clicked 
