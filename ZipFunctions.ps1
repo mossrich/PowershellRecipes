@@ -20,7 +20,6 @@ function Get-ZipEntryContent(#returns the bytes of the first matching entry
 function Delete-ZipEntries(
   [string] $ZipFilePath, #optional - specify a ZipStream or path 
   [IO.Stream] $ZipStream = (New-Object IO.FileStream($ZipFilePath, [IO.FileMode]::Open)),
-  [string] $EntryPath,
   [string] $WildcardNamesToDelete){
     $ZipArchive = New-Object IO.Compression.ZipArchive($ZipStream, [IO.Compression.ZipArchiveMode]::Read)
     ($zip.Entries | ? { $_.Name -like $WildcardNamesToDelete }) | % { 
