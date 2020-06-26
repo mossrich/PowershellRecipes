@@ -5,6 +5,8 @@ A set of powershell scripts that are useful or show a reusable technique. There 
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/AsciiMenu.ps1">AsciiMenu.ps1</a> - shows an ASCII box menu and allows selecting single or multiple choices
 
+<a href="https://github.com/mossrich/PowershellRecipes/blob/master/AttachVisualStudioDebuggerToAppPool.ps1">AttachVisualStudioDebuggerToAppPool.ps1</a> - Attaches a running (as admin) instance of Visual Studio to the DefaultAppPool worker process
+
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/CertificateFunctions.ps1">CertificateFunctions.ps1</a>  - GetCertThumbprintFromStore gets matching certs and prompts if many match
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/Choose.ps1">Choose.ps1</a>	- choose from a list 
