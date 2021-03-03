@@ -17,6 +17,8 @@ A set of powershell scripts that are useful or show a reusable technique. There 
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/DecodeJwtAccessToken.ps1">DecodeJwtAccessToken.ps1</a>	- decodes Base 64 JWT AccessToken for OAuth
 
+<a href="https://github.com/mossrich/PowershellRecipes/blob/master/DownloadGitHubRepoZipped.ps1">DownloadGitHubRepoZipped.ps1</a>	- Downloads the latest revision of a GitHub repo and saves the zip to desktop
+
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/DynamicParameters.ps1">DynamicParameters.ps1</a> - a minimal example that allows choosing a folder name at the command line 
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/EnablePreview.ps1">EnablePreview.ps1</a>	- allows the preview window in Windows Explorer to show specified file types as text
