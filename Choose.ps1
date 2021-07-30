@@ -1,6 +1,8 @@
 #inspired by https://stackoverflow.com/questions/26386267/is-there-a-one-liner-for-using-default-values-with-read-host
 'Default Value' | %{If($Entry = Read-Host "Enter a value ($_)"){$Entry}Else{$_}} #returns user entry or 'Default Value' if user hit [Enter] 
 
+'google.com' | %{(Read-Host "Host name ($_)").Trim(),$_} | ?{$_} | Select -First 1 #same as above, but no intermediate $Entry variable
+
 $choices = [Management.Automation.Host.ChoiceDescription[]](
     (New-Object Management.Automation.Host.ChoiceDescription "&localhost","127.0.0.1"), #Label,HelpMessage
     (New-Object Management.Automation.Host.ChoiceDescription "&Google","www.google.com")
