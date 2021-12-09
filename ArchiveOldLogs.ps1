@@ -1,5 +1,5 @@
 #Sends $FileSpecs files to a zip archive if they match $Filter - deleting the original if $DeleteAfterArchiving is true. 
-#Files that have already been archived will be ignored. 
+#Files that have already been archived based on matching relative path and modification time will be skipped. 
 param (
    [string] $ParentFolder = "$PSScriptRoot", #Files will be stored in the zip with path relative to this folder
    [string[]] $FileSpecs = @("*.log","*.txt","*.svclog","*.log.*"), 
@@ -21,7 +21,7 @@ Try{
     ForEach ($File in $FileList){
         Write-Progress -Activity "Archiving files" -Status  "Archiving file $($totalcount - $countdown) of $totalcount : $($File.Name)"  -PercentComplete (($totalcount - $countdown)/$totalcount * 100)
         $ArchivedFile = $null
-        $RelativePath = (Resolve-Path -LiteralPath "$($File.FullName)" -Relative) -replace '^.\\'
+        $RelativePath = (Resolve-Path -LiteralPath "$($File.FullName)" -Relative) -replace '^.\\' #removes .\ from $RelativePath: some zip programs will treat . as a folder and will nest all others below it
         $AlreadyArchivedFile = ($WriteArchive.Entries | Where-Object {#zip will store multiple copies of the exact same file - prevent this by checking if already archived. 
                 (($_.FullName -eq $RelativePath) -and ($_.Length -eq $File.Length) )  -and 
                 ([math]::Abs(($_.LastWriteTime.UtcDateTime - $File.LastWriteTimeUtc).Seconds) -le 2) #ZipFileExtensions timestamps are only precise within 2 seconds. 
