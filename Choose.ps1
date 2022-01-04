@@ -3,6 +3,10 @@
 
 'google.com' | %{(Read-Host "Host name ($_)").Trim(),$_} | ?{$_} | Select -First 1 #same as above, but no intermediate $Entry variable
 
+'google.com' | %{(Read-Host "Host Name ($_)"),$_ -match '\S'|Select -First 1} 
+
+'google.com' | %{@((Read-Host "Host Name: ($_)"),$_ -match '\S')[0]} #shorter using array syntax instead of Select-Object
+
 $choices = [Management.Automation.Host.ChoiceDescription[]](
     (New-Object Management.Automation.Host.ChoiceDescription "&localhost","127.0.0.1"), #Label,HelpMessage
     (New-Object Management.Automation.Host.ChoiceDescription "&Google","www.google.com")
