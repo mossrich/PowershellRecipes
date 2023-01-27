@@ -5,7 +5,7 @@ Function DecodeJwtAccessToken([string]$token){#condensed from https://www.michev
         [Text.Encoding]::ASCII.GetString([Convert]::FromBase64String($_)) | ConvertFrom-Json
     }
     $decoded[1] | Get-Member -MemberType NoteProperty | ? {$_.Name -in @("exp","auth_time","nbf","iat")} | %{ #convert Unix times to local
-        $decoded[1]."$($_.Name)" = ([datetime]"1/1/1970").AddSeconds([int] $decoded.Payload."$($_.Name)").ToLocalTime() 
+        $decoded[1]."$($_.Name)" = ([datetime]"1/1/1970").AddSeconds([int] $decoded[1]."$($_.Name)").ToLocalTime() 
     }
     [pscustomobject]@{Header = $decoded[0];PayLoad = $decoded[1]}
 }
