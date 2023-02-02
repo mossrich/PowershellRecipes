@@ -31,6 +31,8 @@ A set of powershell scripts that are useful or show a reusable technique. There 
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/ID3v1-Edit.ps1">ID3v1-Edit.ps1</a> - Parse and set ID3v1 tags in the last 128 bytes of a file
 
+<a href="https://github.com/mossrich/PowershellRecipes/blob/master/IsFederalHoliday.ps1">IsFederalHoliday.ps1</a> - Determine if the date supplied is a Federal Observed Holiday
+
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/ListWP.ps1">ListWP.ps1</a>	- List Worker Processes
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/MergedRowsGrid.ps1">MergedRowsGrid.ps1</a> - Merge Rows in a WinForms DataGridView if values equal 
