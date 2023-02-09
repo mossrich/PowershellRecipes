@@ -23,6 +23,8 @@ A set of powershell scripts that are useful or show a reusable technique. There 
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/EnablePreview.ps1">EnablePreview.ps1</a>	- allows the preview window in Windows Explorer to show specified file types as text
 
+<a href="https://github.com/mossrich/PowershellRecipes/blob/master/FileSystemWatcher.ps1">FileSystemWatcher.ps1</a>	- Monitors desktop and reports filesystem changes
+
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/Forms1.ps1">Forms1.ps1</a>	- Sample Winforms app
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/GDataClient.ps1">GDataClient.ps1</a>	- Performs Oauth 2.0 authorization and authentication/re-auth to get an Oauth access_token, allowing REST API calls
