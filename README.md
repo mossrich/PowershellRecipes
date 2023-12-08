@@ -51,6 +51,8 @@ A set of powershell scripts that are useful or show a reusable technique. There 
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/TraySnippets.ps1">TraySnippets.ps1</a>	- Creates an icon from base64-zipped string to put in system tray, with scriptblocks available from rt-click menu 
 
+<a href="https://github.com/mossrich/PowershellRecipes/blob/master/TimeoutWarning.ps1">TimeoutWarning.ps1</a>	- Beeps when screen saver and lockout is about to engage
+
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/Write-Columns.ps1">Write-Columns.ps1</a>	- Displays an array of multi-row strings as newspaper style columns 
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/ZipFunctions.ps1">ZipFunctions.ps1</a> - Add/Read/Delete files from a .Zip in memory
