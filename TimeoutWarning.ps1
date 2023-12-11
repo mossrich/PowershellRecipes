@@ -20,8 +20,8 @@ While ($true){
     $idleTime = New-TimeSpan -Seconds (([System.Environment]::TickCount - [user32.LastInputInfo]::LastInputTicks) / 1000)#TickCount = milliseconds since boot. LastInputTicks = milliseconds of last key/mouse activity. 
     Write-Host ([string][datetime]::Now +  " Idle for " + $idleTime.TotalSeconds)
     if($idleTime -gt $timeout){#timed out - poll again once unlocked
-        Write-Host ([string][datetime]::Now +  ' Timed out - Idle time ' + $idleTime + ' sleeping for ' + $warningTime.TotalSeconds) 
-        Start-Sleep -Seconds $warningTime.TotalSeconds #poll again after timed out, but not too frequently
+        Write-Host ([string][datetime]::Now +  ' Timed out - Idle time ' + $idleTime + ' sleeping for ' + $timeout.TotalSeconds) 
+        Start-Sleep -Seconds $timeout.TotalSeconds #poll again after timed out - user might unlock and reset the timer
     }Elseif($idleTime -lt ($timeout - $warningTime)){#sleep until we're nearing the warning time 
         $sleepSecs = [math]::max((($timeout - $warningTime) - $idleTime).TotalSeconds,1) #at least a second to prevent rapid polling 
         Write-Host ([string][datetime]::Now +  ' Sleeping for ' + $sleepSecs + ' seconds')
