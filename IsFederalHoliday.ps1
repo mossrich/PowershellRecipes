@@ -17,13 +17,17 @@ For regular Monday through Friday workers, holidays that land on a Saturday will
 #>
 
 function IsFederalHoliday([datetime] $DateToCheck = (Get-Date)){
-  [int]$year = $DateToCheck | %{$_.Year + $(If($_.Day -eq 31 -and $_.Month -eq 12 -and $_.DayOfWeek -eq 'Friday'){1})}
+  #[int]$year = $DateToCheck | %{$_.Year + $(If($_.Day -eq 31 -and $_.Month -eq 12 -and $_.DayOfWeek -eq 'Friday'){1})}
+  [int]$year = $DateToCheck | %{$_.Year + $(If($_.ToString('R') -like 'Fri, 31 Dec*'){1})}
   $HolidaysInYear = (@(
     [datetime]"1/1/$year", # 1/1/2021 on Saturday is observed on 12/31/2021 (prior year)
+    (14..20 | %{([datetime]"1/1/$year").AddDays($_)}|?{$_.DayOfWeek -eq 'Monday'})[0], #MLK
+    (14..20 | %{([datetime]"2/1/$year").AddDays($_)}|?{$_.DayOfWeek -eq 'Monday'})[0], #Presidents/Washington
     (24..30 | %{([datetime]"5/1/$year").AddDays($_)}|?{$_.DayOfWeek -eq 'Monday'})[-1], #Memorial Day
     $(If($year -ge 2021){[datetime]"6/19/$year"}Else{[datetime]"1/1/$year"}), #Juneteenth is a federal holiday since 2021
     [datetime]"7/4/$year",#Independence Day
     (0..6 | %{([datetime]"9/1/$year").AddDays($_)}|?{$_.DayOfWeek -eq 'Monday'})[0], #Labor Day - first Mon in Sept.
+    (7..13 | %{([datetime]"10/1/$year").AddDays($_)}|?{$_.DayOfWeek -eq 'Monday'})[0], #Discoverers/Columbus
     [datetime]"11/11/$year",#Veterans Day
     (0..29 | %{([datetime]"11/1/$year").AddDays($_)}|?{$_.DayOfWeek -eq 'Thursday'})[3],#Thanksgiving - 4th Thu in Nov.
     [datetime]"12/25/$year"#Christmas
