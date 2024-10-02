@@ -49,6 +49,8 @@ A set of powershell scripts that are useful or show a reusable technique. There 
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/SpeechSoundboard.ps1">SpeechSoundboard.ps1</a>  - a simple list of words as buttons that are spoken when clicked 
 
+<a href="https://github.com/mossrich/PowershellRecipes/blob/master/SqlDBBrowser.ps1">SqlDBBrowser.ps1</a>  - preview SQL table contents in a minimal winform
+
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/TraySnippets.ps1">TraySnippets.ps1</a>	- Creates an icon from base64-zipped string to put in system tray, with scriptblocks available from rt-click menu 
 
 <a href="https://github.com/mossrich/PowershellRecipes/blob/master/TimeoutWarning.ps1">TimeoutWarning.ps1</a>	- Beeps when screen saver and lockout is about to engage
