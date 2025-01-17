@@ -27,18 +27,19 @@ function Show-BoxMenu (
 
         $MaxOptionsToShow = [Console]::WindowHeight - 3 - $(if ($Expand) { 2 } else { 0 }) # can only show as many options as unused screen rows - recalculate if resized 
         $menuHeight = [Math]::Min($Options.Length, $MaxOptionsToShow)
+        $titleHeight = 2
 
-        if ($Expand) { $Width = [Math]::Max( $Width, [Console]::WindowWidth - 2) } # -2: leave space for border 
+        if ($Expand) { $Width = [Math]::Max( $Width, [Console]::WindowWidth - 2); $titleHeight =4 } # -2: leave space for border 
         if ($firstDraw) { 
             $firstDraw = $false 
         }
         else { 
-            [Console]::CursorTop -= ($menuHeight + 2) 
+            [Console]::CursorTop -= ($menuHeight + $titleHeight) 
         }
         $LeftPad = [Math]::Max($Marker.Length, [math]::Floor(($Width - $Title.Length) / 2)) # Left padding centers the title
         if ($Expand) {
             # Draw a title bar as wide as the console, on its own row
-            $EOL = "`r" # if line extends to far right of console, an extra line break will be inserted - leave it off 
+            $EOL = "`r`n" # if line extends to far right of console, an extra line break will be inserted - leave it off 
             Write-Host "$($Border[0])$([string]$Border[1] * ($Width))$($Border[2])$EOL" -NoNewline                    # ┌───────┐
             Write-Host "$($Border[3])$(((' ' * $LeftPad) + $Title).PadRight($Width,' '))$($Border[3])$EOL" -NoNewline # │ Title │
             Write-Host "$($Border[6])$([string]$Border[7] * ($Width))$($Border[8])$EOL" -NoNewline                    # ├───────┤
@@ -98,6 +99,6 @@ $doubleBorder = '╔═╗║╚╝╟─╢▒'
 #Show-SimpleMenu @('first','second option','third','fourth','fifth') -border $doubleBorder
 #Show-MultiSelectMenu @('first','second','third','fourth','fifth')  -selected @($true,$false,$true) 
 #Show-MultiSelectMenu (Get-ChildItem -Path . -Directory | Select-Object -ExpandProperty FullName)  -selected @($true,$false,$true) 
-#Show-BoxMenu @('first','second, very long option','third','fourth','fifth') -border $doubleBorder -Expand 
-Show-BoxMenu @('first', 'second option', 'third', 'fourth', 'fifth')  -selected @($true, $false, $true) -MultiSelect 
+Show-BoxMenu @('first','second, very long option','third','fourth','fifth') -border $doubleBorder -MultiSelect -Expand 
+#Show-BoxMenu @('first', 'second option', 'third', 'fourth', 'fifth')  -selected @($true, $false, $true) -MultiSelect 
 #Show-BoxMenu (Get-ChildItem -Path . -file | Select-Object -ExpandProperty FullName)  -selected @($true,$false,$true) -MultiSelect -Expand 
