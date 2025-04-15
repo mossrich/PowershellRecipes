@@ -3,8 +3,8 @@
 if (-not ([Management.Automation.PSTypeName]'user32.LastInputInfo').Type){
     Add-Type -namespace 'user32' -name 'LastInputInfo' -member @'
     [DllImport("user32.dll")] 
-    [StructLayout(LayoutKind.Sequential)] public struct LASTINPUTINFO {public uint cbSize;public int dwTime;}
     public static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+    [StructLayout(LayoutKind.Sequential)] public struct LASTINPUTINFO {public uint cbSize;public int dwTime;}
     public static int LastInputTicks{get{
         LASTINPUTINFO lii = new LASTINPUTINFO();
         lii.cbSize = (uint)Marshal.SizeOf(typeof(LASTINPUTINFO));
